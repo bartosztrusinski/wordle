@@ -1,5 +1,11 @@
+import Header from './Header';
+
 const Game = () => {
-  return <>Vite + Preact + TypeScript + Styled Components</>;
+  return (
+    <>
+      <Header />
+    </>
+  );
 };
 
 export default Game;
