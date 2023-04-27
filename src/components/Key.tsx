@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { VNode } from 'preact';
-import { Letter, LetterSpot } from './interface';
+import { Letter, LetterSpot } from '../interface';
 
 const StyledButton = styled.button`
   display: flex;

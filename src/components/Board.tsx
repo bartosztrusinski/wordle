@@ -1,8 +1,13 @@
 import styled from 'styled-components';
 import LetterBox from './LetterBox';
 import { useEffect } from 'preact/hooks';
-import { wordLength, getCSSVariable, maxGuesses, setCSSVariable } from './util';
-import { Word, WordGuess } from './interface';
+import {
+  wordLength,
+  getCSSVariable,
+  maxGuesses,
+  setCSSVariable,
+} from '../util';
+import { Word, WordGuess } from '../interface';
 
 const StyledBoard = styled.div`
   width: min(100%, var(--board-width));

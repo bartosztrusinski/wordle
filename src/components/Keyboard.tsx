@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import Key from './Key';
 import BackspaceIcon from './BackspaceIcon';
-import { LetterGuess } from './interface';
-import { keyboard } from './util';
+import { LetterGuess } from '../interface';
+import { keyboard } from '../util';
 
 const Container = styled.div`
   height: var(--keyboard-height);

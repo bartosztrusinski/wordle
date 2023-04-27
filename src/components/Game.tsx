@@ -9,8 +9,8 @@ import {
   isValidLetter,
   isValidWord,
   maxGuesses,
-} from './util';
-import { LetterGuess, Word, WordGuess } from './interface';
+} from '../util';
+import { LetterGuess, Word, WordGuess } from '../interface';
 import { useEffect, useState } from 'preact/hooks';
 
 const StyledMain = styled.main`
