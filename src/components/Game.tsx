@@ -1,6 +1,7 @@
 import Board from './Board';
 import Keyboard from './Keyboard';
 import styled from 'styled-components';
+import useListenKeyPress from '../hooks/useListenKeyPress';
 import {
   wordLength,
   createLetterCount,
@@ -11,7 +12,7 @@ import {
   maxGuesses,
 } from '../util';
 import { LetterGuess, Word, WordGuess } from '../interface';
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 
 const StyledMain = styled.main`
   max-width: var(--game-width);
@@ -36,60 +37,35 @@ const Game = () => {
   const [solutionWord] = useState<string>(getRandomSolution());
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
-  const wordGuesses: WordGuess[] = words
-    .filter((_, wordIndex) => wordIndex < currentWordIndex)
-    .map((word) => {
-      const solutionLetterCount = createLetterCount(solutionWord);
+  const handleKeyPress = ({ key, repeat }: KeyboardEvent) => {
+    if (repeat || currentWordIndex === maxGuesses) return;
 
-      return word
-        .map((letter, letterIndex) => {
-          if (letter === solutionWord[letterIndex]) {
-            solutionLetterCount[letter]--;
-            return { letter, spot: 'correct' } as LetterGuess;
-          }
-          return letter;
-        })
-        .map((letter) => {
-          if (typeof letter === 'object') return letter;
+    const letter = key.toLowerCase();
 
-          if (
-            solutionWord.includes(letter) &&
-            solutionLetterCount[letter] > 0
-          ) {
-            solutionLetterCount[letter]--;
-            return { letter, spot: 'wrong' } as LetterGuess;
-          }
-          return { letter, spot: 'none' } as LetterGuess;
-        });
-    });
+    if (letter === 'enter') {
+      submitWord();
+      return;
+    }
 
-  const letterGuesses: LetterGuess[] = wordGuesses.flat().sort((a, b) => {
-    if (a.spot === 'correct') return -1;
-    if (b.spot === 'correct') return 1;
-    if (a.spot === 'wrong') return -1;
-    if (b.spot === 'wrong') return 1;
-    return 0;
-  });
+    if (letter === 'backspace') {
+      removeLetter();
+      return;
+    }
 
-  const enterLetter = (letter: string) => {
-    if (currentLetterIndex === wordLength || isGameOver) return;
-
-    const newWords = [...words].map((word) => [...word]);
-    newWords[currentWordIndex][currentLetterIndex] = letter;
-
-    setWords(newWords);
-    setCurrentLetterIndex(currentLetterIndex + 1);
+    if (isValidLetter(letter)) {
+      enterLetter(letter);
+      return;
+    }
   };
 
-  const removeLetter = () => {
-    if (currentLetterIndex === 0) return;
+  useListenKeyPress(handleKeyPress);
 
-    const newWords = [...words].map((word) => [...word]);
-    newWords[currentWordIndex][currentLetterIndex - 1] = '';
-
-    setWords(newWords);
-    setCurrentLetterIndex(currentLetterIndex - 1);
-  };
+  const handleKeyClick = (key: string) =>
+    key === 'enter'
+      ? submitWord()
+      : key === 'backspace'
+      ? removeLetter()
+      : enterLetter(key);
 
   const submitWord = () => {
     if (isGameOver) return;
@@ -126,41 +102,60 @@ const Game = () => {
     }
   };
 
-  const handleKeyPress = ({ key, repeat }: KeyboardEvent) => {
-    if (repeat || currentWordIndex === maxGuesses) return;
+  const removeLetter = () => {
+    if (currentLetterIndex === 0) return;
 
-    const letter = key.toLowerCase();
+    const newWords = [...words].map((word) => [...word]);
+    newWords[currentWordIndex][currentLetterIndex - 1] = '';
 
-    if (letter === 'enter') {
-      submitWord();
-      return;
-    }
-
-    if (letter === 'backspace') {
-      removeLetter();
-      return;
-    }
-
-    if (isValidLetter(letter)) {
-      enterLetter(letter);
-      return;
-    }
+    setWords(newWords);
+    setCurrentLetterIndex(currentLetterIndex - 1);
   };
 
-  const handleKeyClick = (key: string) =>
-    key === 'backspace'
-      ? removeLetter()
-      : key === 'enter'
-      ? submitWord()
-      : enterLetter(key);
+  const enterLetter = (letter: string) => {
+    if (currentLetterIndex === wordLength || isGameOver) return;
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress);
+    const newWords = [...words].map((word) => [...word]);
+    newWords[currentWordIndex][currentLetterIndex] = letter;
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleKeyPress]);
+    setWords(newWords);
+    setCurrentLetterIndex(currentLetterIndex + 1);
+  };
+
+  const wordGuesses: WordGuess[] = words
+    .filter((_, wordIndex) => wordIndex < currentWordIndex)
+    .map((word) => {
+      const solutionLetterCount = createLetterCount(solutionWord);
+
+      return word
+        .map((letter, letterIndex) => {
+          if (letter === solutionWord[letterIndex]) {
+            solutionLetterCount[letter]--;
+            return { letter, spot: 'correct' } as LetterGuess;
+          }
+          return letter;
+        })
+        .map((letter) => {
+          if (typeof letter === 'object') return letter;
+
+          if (
+            solutionWord.includes(letter) &&
+            solutionLetterCount[letter] > 0
+          ) {
+            solutionLetterCount[letter]--;
+            return { letter, spot: 'wrong' } as LetterGuess;
+          }
+          return { letter, spot: 'none' } as LetterGuess;
+        });
+    });
+
+  const letterGuesses: LetterGuess[] = wordGuesses.flat().sort((a, b) => {
+    if (a.spot === 'correct') return -1;
+    if (b.spot === 'correct') return 1;
+    if (a.spot === 'wrong') return -1;
+    if (b.spot === 'wrong') return 1;
+    return 0;
+  });
 
   return (
     <StyledMain>
