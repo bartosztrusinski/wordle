@@ -1,22 +1,25 @@
 import styled from 'styled-components';
 
-const Container = styled.header`
-  background-color: #121213;
-  padding: 0.5rem;
-  text-align: center;
-  border-bottom: 1px solid #3a3a3c;
+const StyledHeader = styled.header`
+  height: var(--header-height);
+  display: flex;
+  place-content: center;
+  place-items: center;
+  background-color: var(--color-dark);
+  border-bottom: 0.0625rem solid var(--color-none);
 `;
 
 const Title = styled.h1`
-  color: #fafafa;
-  font-size: 2.25rem;
+  font-size: min(1.5rem + 1vw, 2.25rem);
+  font-family: 'Roboto Slab', sans-serif;
+  font-weight: 900;
 `;
 
 const Header = () => {
   return (
-    <Container>
+    <StyledHeader>
       <Title>Wordle</Title>
-    </Container>
+    </StyledHeader>
   );
 };
 
