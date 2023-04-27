@@ -14,7 +14,9 @@ const Box = styled.div`
   font-weight: bold;
   user-select: none;
   border: ${({ spot, letter }: LetterBoxProps) =>
-    spot ? '0' : `0.125rem solid var(--color-${letter ? 'gray' : 'none'})`};
+    spot
+      ? '0'
+      : `0.125rem solid var(--color-${letter ? 'light-gray' : 'dark-gray'})`};
   text-transform: uppercase;
   background-color: ${({ spot }: LetterBoxProps) =>
     `var(--color-${spot ?? 'dark'})`};
