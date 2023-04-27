@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@900&family=Roboto:wght@400;700&display=swap');
+
 /*
   1. Use a more-intuitive box-sizing model.
 */
@@ -67,15 +69,28 @@ h6 {
   overflow-wrap: break-word;
 }
 
-/*
-  9. Create a root stacking context
-*/
-#root,
-#__next {
-  isolation: isolate;
-}
-
 #app {
   height: 100%;
-  background-color: #121213;
+  background-color: var(--color-dark);
+  color: var(--color-light);
+}
+
+:root {
+  --game-width: 31.25rem;
+  --header-height: 3rem;
+  --keyboard-height: 12.5rem;
+
+  --color-correct: #538d4e;
+  --color-wrong: #b59f3b;
+  --color-none: #3a3a3c;
+
+  --color-dark: #121213;
+  --color-light: #fafafa;
+  --color-gray: #818384;
+}
+
+@media (min-width: 26rem) {
+  :root {
+    --header-height: 3.75rem;
+  }
 }
