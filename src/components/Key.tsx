@@ -19,6 +19,10 @@ const StyledButton = styled.button`
   flex: ${({ size }: KeyProps) => (size === 'big' ? 1.5 : 1)} 1 0;
   font-size: ${({ size }: KeyProps) =>
     size === 'big' ? '0.75rem' : '1.25rem'};
+
+  &:focus-visible {
+    outline: 0.125rem solid teal;
+  }
 `;
 
 interface KeyProps {
