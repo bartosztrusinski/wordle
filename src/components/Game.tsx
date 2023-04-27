@@ -11,7 +11,7 @@ import {
   isValidWord,
   maxGuesses,
 } from '../util';
-import { LetterGuess, Word, WordGuess } from '../interface';
+import { Letter, LetterGuess, Word, WordGuess } from '../interface';
 import { useState } from 'preact/hooks';
 
 const StyledMain = styled.main`
@@ -112,7 +112,7 @@ const Game = () => {
     setCurrentLetterIndex(currentLetterIndex - 1);
   };
 
-  const enterLetter = (letter: string) => {
+  const enterLetter = (letter: Letter) => {
     if (currentLetterIndex === wordLength || isGameOver) return;
 
     const newWords = [...words].map((word) => [...word]);
@@ -143,17 +143,17 @@ const Game = () => {
             solutionLetterCount[letter] > 0
           ) {
             solutionLetterCount[letter]--;
-            return { letter, spot: 'wrong' } as LetterGuess;
+            return { letter, spot: 'present' } as LetterGuess;
           }
-          return { letter, spot: 'none' } as LetterGuess;
+          return { letter, spot: 'absent' } as LetterGuess;
         });
     });
 
   const letterGuesses: LetterGuess[] = wordGuesses.flat().sort((a, b) => {
     if (a.spot === 'correct') return -1;
     if (b.spot === 'correct') return 1;
-    if (a.spot === 'wrong') return -1;
-    if (b.spot === 'wrong') return 1;
+    if (a.spot === 'present') return -1;
+    if (b.spot === 'present') return 1;
     return 0;
   });
 

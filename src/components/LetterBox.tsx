@@ -1,8 +1,9 @@
+import { Letter, LetterSpot } from 'src/interface';
 import styled from 'styled-components';
 
 interface LetterBoxProps {
-  letter: string;
-  spot?: 'correct' | 'wrong' | 'none';
+  letter: Letter;
+  spot?: LetterSpot;
 }
 
 const Box = styled.div`

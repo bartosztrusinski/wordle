@@ -6,7 +6,7 @@ const StyledHeader = styled.header`
   place-content: center;
   place-items: center;
   background-color: var(--color-dark);
-  border-bottom: 0.0625rem solid var(--color-none);
+  border-bottom: 0.0625rem solid var(--color-dark-gray);
 `;
 
 const Title = styled.h1`

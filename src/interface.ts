@@ -2,7 +2,7 @@ type Letter = string;
 
 type Word = Letter[];
 
-type LetterSpot = 'correct' | 'wrong' | 'none';
+type LetterSpot = 'correct' | 'present' | 'absent';
 
 type LetterGuess = { letter: Letter; spot: LetterSpot };
 

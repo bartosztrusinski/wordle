@@ -86,8 +86,8 @@ h6 {
   --color-dark-gray: #3a3a3c;
 
   --color-correct: #538d4e;
-  --color-wrong: #b59f3b;
-  --color-none: var(--color-dark-gray);
+  --color-present: #b59f3b;
+  --color-absent: var(--color-dark-gray);
 }
 
 @media (min-width: 26rem) {
