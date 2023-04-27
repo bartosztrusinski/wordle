@@ -1,12 +1,7 @@
 import styled from 'styled-components';
 import LetterBox from './LetterBox';
-import { useEffect } from 'preact/hooks';
-import {
-  wordLength,
-  getCSSVariable,
-  maxGuesses,
-  setCSSVariable,
-} from '../util';
+import useResizeBoard from '../hooks/useResizeBoard';
+import { wordLength, maxGuesses } from '../util';
 import { Word, WordGuess } from '../interface';
 
 const StyledBoard = styled.div`
@@ -31,33 +26,13 @@ const Row = styled.div`
   gap: 0.3125rem;
 `;
 
-const maxBoardHeightRem = 26.25;
-
-const adjustBoardSize = () => {
-  const headerHeight = parseFloat(getCSSVariable('--header-height'));
-  const keyboardHeight = parseFloat(getCSSVariable('--keyboard-height'));
-  const windowHeightRem = window.innerHeight / 16;
-  const newBoardHeight = Math.min(
-    windowHeightRem - headerHeight - keyboardHeight,
-    maxBoardHeightRem
-  );
-
-  setCSSVariable('--board-height', newBoardHeight + 'rem');
-  setCSSVariable('--board-width', (newBoardHeight * 5) / 6 + 'rem');
-};
-
 interface BoardProps {
   words: Word[];
   wordGuesses: WordGuess[];
 }
 
 const Board = ({ words, wordGuesses }: BoardProps) => {
-  useEffect(() => {
-    adjustBoardSize();
-    window.addEventListener('resize', adjustBoardSize);
-
-    return () => window.removeEventListener('resize', adjustBoardSize);
-  }, []);
+  useResizeBoard();
 
   return (
     <StyledBoard>

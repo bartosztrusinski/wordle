@@ -11,6 +11,8 @@ const keyboard = [
 const maxGuesses = 6;
 const wordLength = 5;
 
+const maxBoardHeightRem = 26.25;
+
 const getCSSVariable = (name: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name);
 
@@ -45,6 +47,7 @@ export {
   keyboard,
   maxGuesses,
   wordLength,
+  maxBoardHeightRem,
   getCSSVariable,
   setCSSVariable,
   initWords,
