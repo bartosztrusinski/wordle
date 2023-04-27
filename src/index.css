@@ -80,13 +80,14 @@ h6 {
   --header-height: 3rem;
   --keyboard-height: 12.5rem;
 
-  --color-correct: #538d4e;
-  --color-wrong: #b59f3b;
-  --color-none: #3a3a3c;
-
   --color-dark: #121213;
   --color-light: #fafafa;
-  --color-gray: #818384;
+  --color-light-gray: #818384;
+  --color-dark-gray: #3a3a3c;
+
+  --color-correct: #538d4e;
+  --color-wrong: #b59f3b;
+  --color-none: var(--color-dark-gray);
 }
 
 @media (min-width: 26rem) {
