@@ -28,63 +28,63 @@ interface ToasterProps {
   children: VNode;
 }
 
-const ToastContext = createContext<{
-  toast: (newToast: string | VNode, duration?: number) => number;
-  removeToast: (id: number) => void;
-}>({
-  toast: (_newToast: string | VNode, _duration = 500) => 0,
-  removeToast: (_id: number) => {},
+interface Toast {
+  id: number;
+  content: string | VNode;
+  duration: number;
+}
+
+interface ToastContext {
+  toast: (
+    newToast: Toast['content'],
+    duration?: Toast['duration']
+  ) => Toast['id'];
+  removeToast: (id: Toast['id']) => void;
+}
+
+const defaultDuration = 1000;
+
+const ToastContext = createContext<ToastContext>({
+  toast: (_newToast: Toast['content']) => 0,
+  removeToast: (_id: Toast['id']) => {},
 });
 
 const Toaster = ({ children }: ToasterProps) => {
-  const [toasts, setToasts] = useState<
-    { id: number; toast: string | VNode; duration: number }[]
-  >([]);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [id, setId] = useState<Toast['id']>(0);
 
-  const toast = (newToast: string | VNode, duration = 500) => {
-    const id = Math.floor(Math.random() * 1000000);
+  const toast = (newToast: Toast['content'], duration = defaultDuration) => {
+    setToasts((prevToasts) => [
+      ...prevToasts,
+      { id, content: newToast, duration },
+    ]);
 
-    setToasts((prevToasts) => {
-      const newToasts = [...prevToasts].map((toast) => ({ ...toast }));
-      newToasts.push({ id, toast: newToast, duration });
-      return newToasts;
-    });
+    setId((prevId) => prevId + 1);
 
     return id;
   };
 
-  const removeToast = (id: number) => {
-    setToasts((prevToasts) =>
-      [...prevToasts]
-        .map((toast) => ({ ...toast }))
-        .filter((toast) => toast.id !== id)
-    );
+  const removeToast = (id: Toast['id']) => {
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
   };
 
   useEffect(() => {
-    const toastToRemove = [...toasts]
-      .reverse()
-      .sort((a, b) => a.duration - b.duration)[0];
+    const lastToast = toasts[toasts.length - 1];
 
-    if (!toastToRemove) return;
+    if (!lastToast || lastToast.duration === Infinity) return;
 
-    const id = setTimeout(
-      () => removeToast(toastToRemove.id),
-      toastToRemove.duration
-    );
-
-    console.log(toasts, toastToRemove);
-
-    return () => clearTimeout(id);
+    setTimeout(() => removeToast(lastToast.id), lastToast.duration);
   }, [removeToast]);
+
+  const reversedToasts = [...toasts].reverse();
 
   return (
     <ToastContext.Provider value={{ toast, removeToast }}>
       {children}
       <ToastContainer>
-        {toasts.map(({ toast, duration }, index) => (
-          <Toast key={index} duration={duration}>
-            {toast}
+        {reversedToasts.map(({ id, content, duration }) => (
+          <Toast key={id} duration={duration}>
+            {content}
           </Toast>
         ))}
       </ToastContainer>
