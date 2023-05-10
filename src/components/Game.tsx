@@ -32,6 +32,20 @@ const BoardContainer = styled.div`
   overflow: hidden;
 `;
 
+const ToastButton = styled.button`
+  font-family: 'Roboto Slab', sans-serif;
+  margin: 0.2rem;
+  padding: 0.2rem 0.5rem;
+  border: 0.125rem solid var(--color-dark-gray);
+  border-radius: 0.25rem;
+  outline: 0;
+  cursor: pointer;
+
+  &:focus-visible {
+    border-color: teal;
+  }
+`;
+
 const Game = () => {
   const [wordHistory, setWordHistory] = useState<string[]>(['']);
   const [solutionWord, setSolutionWord] = useState<string>(getRandomSolution());
@@ -49,8 +63,10 @@ const Game = () => {
     () =>
       toast(
         <>
-          {isGameWin ? 'Splendid' : solutionWord.toUpperCase()}{' '}
-          <button onClick={resetGame}>Play Again</button>
+          <div>{isGameWin ? 'Splendid' : solutionWord.toUpperCase()}</div>
+          <ToastButton type='button' onClick={resetGame}>
+            Play Again
+          </ToastButton>
         </>,
         Infinity
       ),
