@@ -30,7 +30,7 @@ interface Toast {
 const Toast = ({ id, content, duration }: Toast) => {
   const { removeToast } = useToast();
 
-  useTimeout(() => removeToast(id), duration);
+  useTimeout(() => removeToast(id), duration === Infinity ? null : duration);
 
   return <StyledToast duration={duration}>{content}</StyledToast>;
 };
