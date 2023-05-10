@@ -12,7 +12,6 @@ const StyledBoard = styled.div`
   grid-template-rows: repeat(${maxGuesses}, 1fr);
   gap: 0.3125rem;
   padding: 0.625rem;
-  font-family: 'Roboto', sans-serif;
   font-size: 1rem;
 
   @media (min-height: 37.5rem) {

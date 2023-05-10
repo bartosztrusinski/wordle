@@ -12,12 +12,12 @@ const Container = styled.div`
   gap: 0.5rem;
   padding-inline: 0.5rem;
   padding-bottom: 0.5rem;
-  font-family: 'Roboto', sans-serif;
 `;
 
 const Row = styled.div`
   display: flex;
   gap: 0.375rem;
+  touch-action: manipulation;
 `;
 
 const Space = styled.div`

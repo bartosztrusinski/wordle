@@ -73,6 +73,7 @@ h6 {
   height: 100%;
   background-color: var(--color-dark);
   color: var(--color-light);
+  font-family: 'Roboto', sans-serif;
 }
 
 :root {

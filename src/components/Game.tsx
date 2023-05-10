@@ -40,6 +40,7 @@ const ToastButton = styled.button`
   border-radius: 0.25rem;
   outline: 0;
   cursor: pointer;
+  color: inherit;
 
   &:focus-visible {
     border-color: teal;
