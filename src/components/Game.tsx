@@ -7,12 +7,15 @@ import {
   createLetterCount,
   getRandomSolution,
   initWords,
-  isValidLetter,
+  isValidKey,
   isValidWord,
   maxGuesses,
+  animations,
 } from '../util';
 import { Letter, LetterGuess, Word, WordGuess } from '../interface';
 import { useState } from 'preact/hooks';
+import useToast from './toast/useToast';
+import useTimeout from '../hooks/useTimeout';
 
 const StyledMain = styled.main`
   max-width: var(--game-width);
@@ -34,33 +37,39 @@ const Game = () => {
   const [words, setWords] = useState<Word[]>(initWords());
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
   const [currentLetterIndex, setCurrentLetterIndex] = useState<number>(0);
-  const [solutionWord] = useState<string>(getRandomSolution());
-  const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  const [solutionWord, setSolutionWord] = useState<string>(getRandomSolution());
 
-  const handleKeyPress = ({ key, repeat }: KeyboardEvent) => {
-    if (repeat || currentWordIndex === maxGuesses) return;
+  const { toast, clearToasts } = useToast();
 
-    const letter = key.toLowerCase();
+  const isGameWin = solutionWord === words[currentWordIndex - 1]?.join('');
+  const isGameOver = isGameWin || currentWordIndex === maxGuesses;
 
-    if (letter === 'enter') {
-      submitWord();
+  const handleKeyPress = (e: KeyboardEvent) => {
+    const lowerCaseKey = e.key.toLowerCase();
+
+    if (
+      e.ctrlKey ||
+      e.metaKey ||
+      e.altKey ||
+      e.repeat ||
+      isGameOver ||
+      !isValidKey(lowerCaseKey)
+    ) {
       return;
     }
 
-    if (letter === 'backspace') {
-      removeLetter();
-      return;
-    }
-
-    if (isValidLetter(letter)) {
-      enterLetter(letter);
-      return;
-    }
+    handleKey(lowerCaseKey);
   };
 
   useListenKeyPress(handleKeyPress);
 
-  const handleKeyClick = (key: string) =>
+  const handleKeyClick = (key: string) => {
+    if (isGameOver) return;
+
+    handleKey(key);
+  };
+
+  const handleKey = (key: string) =>
     key === 'enter'
       ? submitWord()
       : key === 'backspace'
@@ -68,44 +77,34 @@ const Game = () => {
       : enterLetter(key);
 
   const submitWord = () => {
-    if (isGameOver) return;
-
     if (currentLetterIndex < wordLength) {
-      alert(`Word must be ${wordLength} letters long!`);
+      toast('Not enough letters');
       return;
     }
 
-    const submittedWord = words[currentWordIndex].join('').toLowerCase();
+    const submittedWord = words[currentWordIndex].join('');
 
     if (!isValidWord(submittedWord)) {
-      alert('Invalid word!');
+      toast('Not in word list');
       return;
     }
 
     setCurrentWordIndex(currentWordIndex + 1);
     setCurrentLetterIndex(0);
-    guessWord(submittedWord);
   };
 
-  const guessWord = (word: string) => {
-    if (word === solutionWord) {
-      setIsGameOver(true);
-      alert('You win!');
-      return;
-    }
-
-    if (currentWordIndex === maxGuesses - 1) {
-      setIsGameOver(true);
-      alert(
-        `You lose! ${solutionWord} was the solution. Better luck next time!`
-      );
-    }
+  const resetGame = () => {
+    setWords(initWords());
+    setCurrentWordIndex(0);
+    setCurrentLetterIndex(0);
+    setSolutionWord(getRandomSolution());
+    clearToasts();
   };
 
   const removeLetter = () => {
     if (currentLetterIndex === 0) return;
 
-    const newWords = [...words].map((word) => [...word]);
+    const newWords = words.map((word) => [...word]);
     newWords[currentWordIndex][currentLetterIndex - 1] = '';
 
     setWords(newWords);
@@ -113,9 +112,9 @@ const Game = () => {
   };
 
   const enterLetter = (letter: Letter) => {
-    if (currentLetterIndex === wordLength || isGameOver) return;
+    if (currentLetterIndex === wordLength) return;
 
-    const newWords = [...words].map((word) => [...word]);
+    const newWords = words.map((word) => [...word]);
     newWords[currentWordIndex][currentLetterIndex] = letter;
 
     setWords(newWords);
@@ -156,6 +155,18 @@ const Game = () => {
     if (b.spot === 'present') return 1;
     return 0;
   });
+
+  useTimeout(
+    () =>
+      toast(
+        <>
+          {isGameWin ? 'Splendid' : solutionWord.toUpperCase()}{' '}
+          <button onClick={resetGame}>Play Again</button>
+        </>,
+        Infinity
+      ),
+    isGameOver ? animations.reveal.duration * wordLength : null
+  );
 
   return (
     <StyledMain>
