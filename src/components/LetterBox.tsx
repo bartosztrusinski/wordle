@@ -1,4 +1,4 @@
-import { Letter, LetterSpot } from '../interface';
+import { LetterSpot } from '../interface';
 import { animations } from '../util';
 import styled from 'styled-components';
 
@@ -47,7 +47,7 @@ const Box = styled.div`
 
 interface LetterBoxProps {
   index: number;
-  letter: Letter;
+  letter: string;
   spot?: LetterSpot;
   isRevealing: boolean;
   isBouncing: boolean;
@@ -65,7 +65,7 @@ const LetterBox = ({
       spot={spot}
       letter={letter}
       index={index}
-      bounce={isBouncing}
+      isBouncing={isBouncing}
       isRevealing={isRevealing}>
       {letter}
     </Box>

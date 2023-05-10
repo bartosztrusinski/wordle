@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { VNode } from 'preact';
-import { Letter, LetterSpot } from '../interface';
+import { LetterSpot } from '../interface';
 
 const StyledButton = styled.button`
   display: flex;
@@ -14,9 +14,12 @@ const StyledButton = styled.button`
   user-select: none;
   text-transform: uppercase;
   color: var(--color-light);
+
   background-color: ${({ spot }: KeyProps) =>
     `var(--color-${spot ?? 'light-gray'})`};
+
   flex: ${({ size }: KeyProps) => (size === 'big' ? 1.5 : 1)} 1 0;
+
   font-size: ${({ size }: KeyProps) =>
     size === 'big' ? '0.75rem' : '1.25rem'};
 
@@ -26,11 +29,11 @@ const StyledButton = styled.button`
 `;
 
 interface KeyProps {
-  letter: Letter;
-  value: VNode | Letter;
+  letter: string;
+  value: VNode | string;
   spot?: LetterSpot;
   size?: 'normal' | 'big';
-  onClick: (letter?: Letter) => void;
+  onClick: (letter?: string) => void;
 }
 
 const Key = ({ value, spot, onClick, letter, size = 'normal' }: KeyProps) => {

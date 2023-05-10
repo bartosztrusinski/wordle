@@ -1,4 +1,3 @@
-import { Letter, Word } from './interface';
 import validWords from './validWords.json';
 import solutions from './solutions.json';
 
@@ -39,9 +38,6 @@ const getCSSVariable = (name: string) =>
 const setCSSVariable = (name: string, value: string) =>
   document.documentElement.style.setProperty(name, value);
 
-const initWords = (): Word[] =>
-  Array(maxGuesses).fill(Array(wordLength).fill(''));
-
 const getRandomSolution = () => {
   const randomIndex = Math.floor(Math.random() * solutions.length);
   return solutions[randomIndex];
@@ -56,9 +52,9 @@ const createLetterCount = (word: string) =>
     }
 
     return acc;
-  }, {} as Record<Letter, number>);
+  }, {} as Record<string, number>);
 
-const isValidKey = (letter: Letter) => keyboard.flat().includes(letter);
+const isValidKey = (letter: string) => keyboard.flat().includes(letter);
 
 const isValidWord = (word: string) => validWords.includes(word);
 
@@ -69,7 +65,6 @@ export {
   maxBoardHeightRem,
   getCSSVariable,
   setCSSVariable,
-  initWords,
   getRandomSolution,
   createLetterCount,
   isValidKey,
