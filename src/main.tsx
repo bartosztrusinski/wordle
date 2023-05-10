@@ -1,6 +1,6 @@
 import 'preact/debug';
 import './index.css';
 import { render } from 'preact';
-import App from './components/App';
+import Wordle from './components/Wordle';
 
-render(<App />, document.getElementById('app') as HTMLElement);
+render(<Wordle />, document.getElementById('app') as HTMLElement);
