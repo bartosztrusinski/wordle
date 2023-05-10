@@ -1,7 +1,8 @@
-import { VNode } from 'preact';
-import { useEffect } from 'preact/hooks';
 import styled from 'styled-components';
 import useToast from './useToast';
+import useTimeout from '../../hooks/useTimeout';
+import { animations } from '../../util';
+import { VNode } from 'preact';
 
 const StyledToast = styled.div`
   background-color: var(--color-light);
@@ -14,6 +15,10 @@ const StyledToast = styled.div`
   margin-bottom: 1rem;
   line-height: 1rem;
   border: 0;
+  animation: ${({ duration }: Toast) =>
+    `fade ${animations.fade.duration}ms linear ${
+      duration - animations.fade.duration
+    }ms forwards`};
 `;
 
 interface Toast {
@@ -25,15 +30,9 @@ interface Toast {
 const Toast = ({ id, content, duration }: Toast) => {
   const { removeToast } = useToast();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      removeToast(id);
-    }, duration);
+  useTimeout(() => removeToast(id), duration);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  return <StyledToast>{content}</StyledToast>;
+  return <StyledToast duration={duration}>{content}</StyledToast>;
 };
 
 export default Toast;
