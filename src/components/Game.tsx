@@ -38,6 +38,8 @@ const Game = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
   const [currentLetterIndex, setCurrentLetterIndex] = useState<number>(0);
   const [solutionWord, setSolutionWord] = useState<string>(getRandomSolution());
+  const [isShaking, setIsShaking] = useState<boolean>(false);
+  const [isRevealing, setIsRevealing] = useState<boolean>(false);
 
   const { toast, clearToasts } = useToast();
 
@@ -53,6 +55,7 @@ const Game = () => {
       e.altKey ||
       e.repeat ||
       isGameOver ||
+      isRevealing ||
       !isValidKey(lowerCaseKey)
     ) {
       return;
@@ -64,7 +67,7 @@ const Game = () => {
   useListenKeyPress(handleKeyPress);
 
   const handleKeyClick = (key: string) => {
-    if (isGameOver) return;
+    if (isGameOver || isRevealing) return;
 
     handleKey(key);
   };
@@ -79,6 +82,7 @@ const Game = () => {
   const submitWord = () => {
     if (currentLetterIndex < wordLength) {
       toast('Not enough letters');
+      setIsShaking(true);
       return;
     }
 
@@ -86,9 +90,11 @@ const Game = () => {
 
     if (!isValidWord(submittedWord)) {
       toast('Not in word list');
+      setIsShaking(true);
       return;
     }
 
+    setIsRevealing(true);
     setCurrentWordIndex(currentWordIndex + 1);
     setCurrentLetterIndex(0);
   };
@@ -148,13 +154,16 @@ const Game = () => {
         });
     });
 
-  const letterGuesses: LetterGuess[] = wordGuesses.flat().sort((a, b) => {
-    if (a.spot === 'correct') return -1;
-    if (b.spot === 'correct') return 1;
-    if (a.spot === 'present') return -1;
-    if (b.spot === 'present') return 1;
-    return 0;
-  });
+  const letterGuesses: LetterGuess[] = wordGuesses
+    .slice(0, isRevealing ? -1 : undefined)
+    .flat()
+    .sort((a, b) => {
+      if (a.spot === 'correct') return -1;
+      if (b.spot === 'correct') return 1;
+      if (a.spot === 'present') return -1;
+      if (b.spot === 'present') return 1;
+      return 0;
+    });
 
   useTimeout(
     () =>
@@ -168,10 +177,27 @@ const Game = () => {
     isGameOver ? animations.reveal.duration * wordLength : null
   );
 
+  useTimeout(
+    () => setIsShaking(false),
+    isShaking ? animations.shake.duration : null
+  );
+
+  useTimeout(
+    () => setIsRevealing(false),
+    isRevealing ? animations.reveal.duration * wordLength : null
+  );
+
   return (
     <StyledMain>
       <BoardContainer>
-        <Board words={words} wordGuesses={wordGuesses} />
+        <Board
+          words={words}
+          wordGuesses={wordGuesses}
+          isShaking={isShaking}
+          isRevealing={isRevealing}
+          isGameWin={isGameWin}
+          currentWordIndex={currentWordIndex}
+        />
       </BoardContainer>
       <Keyboard letterGuesses={letterGuesses} onClick={handleKeyClick} />
     </StyledMain>
