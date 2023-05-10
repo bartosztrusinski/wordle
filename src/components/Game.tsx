@@ -6,13 +6,12 @@ import {
   wordLength,
   createLetterCount,
   getRandomSolution,
-  initWords,
   isValidKey,
   isValidWord,
   maxGuesses,
   animations,
 } from '../util';
-import { Letter, LetterGuess, Word, WordGuess } from '../interface';
+import { LetterGuess, WordGuess } from '../interface';
 import { useState } from 'preact/hooks';
 import useToast from './toast/useToast';
 import useTimeout from '../hooks/useTimeout';
@@ -34,17 +33,39 @@ const BoardContainer = styled.div`
 `;
 
 const Game = () => {
-  const [words, setWords] = useState<Word[]>(initWords());
-  const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
-  const [currentLetterIndex, setCurrentLetterIndex] = useState<number>(0);
+  const [wordHistory, setWordHistory] = useState<string[]>(['']);
   const [solutionWord, setSolutionWord] = useState<string>(getRandomSolution());
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [isRevealing, setIsRevealing] = useState<boolean>(false);
 
   const { toast, clearToasts } = useToast();
 
-  const isGameWin = solutionWord === words[currentWordIndex - 1]?.join('');
+  const currentWordIndex = wordHistory.length - 1;
+  const currentLetterIndex = wordHistory[currentWordIndex].length;
+  const isGameWin = solutionWord === wordHistory[currentWordIndex - 1];
   const isGameOver = isGameWin || currentWordIndex === maxGuesses;
+
+  useTimeout(
+    () =>
+      toast(
+        <>
+          {isGameWin ? 'Splendid' : solutionWord.toUpperCase()}{' '}
+          <button onClick={resetGame}>Play Again</button>
+        </>,
+        Infinity
+      ),
+    isGameOver ? animations.reveal.duration * wordLength : null
+  );
+
+  useTimeout(
+    () => setIsShaking(false),
+    isShaking ? animations.shake.duration : null
+  );
+
+  useTimeout(
+    () => setIsRevealing(false),
+    isRevealing ? animations.reveal.duration * wordLength : null
+  );
 
   const handleKeyPress = (e: KeyboardEvent) => {
     const lowerCaseKey = e.key.toLowerCase();
@@ -86,7 +107,7 @@ const Game = () => {
       return;
     }
 
-    const submittedWord = words[currentWordIndex].join('');
+    const submittedWord = wordHistory[currentWordIndex];
 
     if (!isValidWord(submittedWord)) {
       toast('Not in word list');
@@ -95,14 +116,11 @@ const Game = () => {
     }
 
     setIsRevealing(true);
-    setCurrentWordIndex(currentWordIndex + 1);
-    setCurrentLetterIndex(0);
+    setWordHistory([...wordHistory, '']);
   };
 
   const resetGame = () => {
-    setWords(initWords());
-    setCurrentWordIndex(0);
-    setCurrentLetterIndex(0);
+    setWordHistory(['']);
     setSolutionWord(getRandomSolution());
     clearToasts();
   };
@@ -110,29 +128,26 @@ const Game = () => {
   const removeLetter = () => {
     if (currentLetterIndex === 0) return;
 
-    const newWords = words.map((word) => [...word]);
-    newWords[currentWordIndex][currentLetterIndex - 1] = '';
-
-    setWords(newWords);
-    setCurrentLetterIndex(currentLetterIndex - 1);
+    const newWords = [...wordHistory];
+    newWords[currentWordIndex] = newWords[currentWordIndex].slice(0, -1);
+    setWordHistory(newWords);
   };
 
-  const enterLetter = (letter: Letter) => {
+  const enterLetter = (letter: string) => {
     if (currentLetterIndex === wordLength) return;
 
-    const newWords = words.map((word) => [...word]);
-    newWords[currentWordIndex][currentLetterIndex] = letter;
-
-    setWords(newWords);
-    setCurrentLetterIndex(currentLetterIndex + 1);
+    const newWords = [...wordHistory];
+    newWords[currentWordIndex] += letter;
+    setWordHistory(newWords);
   };
 
-  const wordGuesses: WordGuess[] = words
+  const wordGuesses: WordGuess[] = wordHistory
     .filter((_, wordIndex) => wordIndex < currentWordIndex)
     .map((word) => {
       const solutionLetterCount = createLetterCount(solutionWord);
 
       return word
+        .split('')
         .map((letter, letterIndex) => {
           if (letter === solutionWord[letterIndex]) {
             solutionLetterCount[letter]--;
@@ -165,33 +180,11 @@ const Game = () => {
       return 0;
     });
 
-  useTimeout(
-    () =>
-      toast(
-        <>
-          {isGameWin ? 'Splendid' : solutionWord.toUpperCase()}{' '}
-          <button onClick={resetGame}>Play Again</button>
-        </>,
-        Infinity
-      ),
-    isGameOver ? animations.reveal.duration * wordLength : null
-  );
-
-  useTimeout(
-    () => setIsShaking(false),
-    isShaking ? animations.shake.duration : null
-  );
-
-  useTimeout(
-    () => setIsRevealing(false),
-    isRevealing ? animations.reveal.duration * wordLength : null
-  );
-
   return (
     <StyledMain>
       <BoardContainer>
         <Board
-          words={words}
+          wordHistory={wordHistory}
           wordGuesses={wordGuesses}
           isShaking={isShaking}
           isRevealing={isRevealing}

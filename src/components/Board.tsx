@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import LetterBox from './LetterBox';
 import useResizeBoard from '../hooks/useResizeBoard';
 import { wordLength, maxGuesses, animations } from '../util';
-import { Word, WordGuess } from '../interface';
+import { WordGuess } from '../interface';
 
 const StyledBoard = styled.div`
   width: min(100%, var(--board-width));
@@ -29,7 +29,7 @@ const Row = styled.div`
 `;
 
 interface BoardProps {
-  words: Word[];
+  wordHistory: string[];
   wordGuesses: WordGuess[];
   isShaking: boolean;
   isRevealing: boolean;
@@ -38,26 +38,29 @@ interface BoardProps {
 }
 
 const Board = ({
-  words,
+  wordHistory,
   wordGuesses,
   isShaking,
   isRevealing,
   isGameWin,
   currentWordIndex,
 }: BoardProps) => {
+  const rows = Array(maxGuesses).fill(null);
+  const cols = Array(wordLength).fill(null);
+
   useResizeBoard();
 
   return (
     <StyledBoard>
-      {words.map((word, wordIndex) => (
+      {rows.map((_, wordIndex) => (
         <Row
           key={wordIndex}
           isShaking={isShaking && wordIndex === currentWordIndex}>
-          {word.map((letter, letterIndex) => (
+          {cols.map((_, letterIndex) => (
             <LetterBox
               key={letterIndex}
               index={letterIndex}
-              letter={letter}
+              letter={wordHistory[wordIndex]?.[letterIndex]}
               spot={wordGuesses[wordIndex]?.[letterIndex]?.spot}
               isRevealing={isRevealing && wordIndex === currentWordIndex - 1}
               isBouncing={isGameWin && wordIndex === currentWordIndex - 1}
