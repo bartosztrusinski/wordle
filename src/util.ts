@@ -13,6 +13,26 @@ const wordLength = 5;
 
 const maxBoardHeightRem = 26.25;
 
+const animations = {
+  pop: {
+    duration: 80,
+  },
+  fade: {
+    duration: 200,
+  },
+  shake: {
+    duration: 300,
+  },
+  reveal: {
+    duration: 300,
+    delay: 300,
+  },
+  bounce: {
+    duration: 300,
+    delay: 100,
+  },
+};
+
 const getCSSVariable = (name: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name);
 
@@ -55,4 +75,5 @@ export {
   createLetterCount,
   isValidLetter,
   isValidWord,
+  animations,
 };
