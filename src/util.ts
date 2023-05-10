@@ -58,8 +58,7 @@ const createLetterCount = (word: string) =>
     return acc;
   }, {} as Record<Letter, number>);
 
-const isValidLetter = (letter: Letter) =>
-  keyboard.flat().includes(letter) && letter.length === 1;
+const isValidKey = (letter: Letter) => keyboard.flat().includes(letter);
 
 const isValidWord = (word: string) => validWords.includes(word);
 
@@ -73,7 +72,7 @@ export {
   initWords,
   getRandomSolution,
   createLetterCount,
-  isValidLetter,
+  isValidKey,
   isValidWord,
   animations,
 };
