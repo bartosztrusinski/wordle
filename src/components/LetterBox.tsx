@@ -1,10 +1,6 @@
-import { Letter, LetterSpot } from 'src/interface';
+import { Letter, LetterSpot } from '../interface';
+import { animations } from '../util';
 import styled from 'styled-components';
-
-interface LetterBoxProps {
-  letter: Letter;
-  spot?: LetterSpot;
-}
 
 const Box = styled.div`
   display: flex;
@@ -14,18 +10,63 @@ const Box = styled.div`
   line-height: 1;
   font-weight: bold;
   user-select: none;
-  border: ${({ spot, letter }: LetterBoxProps) =>
-    spot
-      ? '0'
-      : `0.125rem solid var(--color-${letter ? 'light-gray' : 'dark-gray'})`};
   text-transform: uppercase;
+
+  border: ${({ spot, letter }: LetterBoxProps) =>
+    `0.125rem solid var(--color-${
+      spot ? spot : letter ? 'light-gray' : 'dark-gray'
+    })`};
+
   background-color: ${({ spot }: LetterBoxProps) =>
-    `var(--color-${spot ?? 'dark'})`};
+    spot ? `var(--color-${spot})` : 'inherit'};
+
+  animation: ${({
+    index,
+    letter,
+    spot,
+    isRevealing,
+    isBouncing,
+  }: LetterBoxProps) =>
+    isRevealing
+      ? `reveal
+          ${animations.reveal.duration}ms 
+          linear 
+          ${animations.reveal.delay * index}ms 
+          backwards
+        `
+      : isBouncing
+      ? `bounce
+          ${animations.bounce.duration}ms
+          linear 
+          ${animations.bounce.delay * index}ms
+        `
+      : letter && !spot
+      ? `pop ${animations.pop.duration}ms ease-in-out`
+      : 'none'};
 `;
 
-const LetterBox = ({ letter, spot }: LetterBoxProps) => {
+interface LetterBoxProps {
+  index: number;
+  letter: Letter;
+  spot?: LetterSpot;
+  isRevealing: boolean;
+  isBouncing: boolean;
+}
+
+const LetterBox = ({
+  index,
+  letter,
+  spot,
+  isRevealing,
+  isBouncing,
+}: LetterBoxProps) => {
   return (
-    <Box spot={spot} letter={letter}>
+    <Box
+      spot={spot}
+      letter={letter}
+      index={index}
+      bounce={isBouncing}
+      isRevealing={isRevealing}>
       {letter}
     </Box>
   );
