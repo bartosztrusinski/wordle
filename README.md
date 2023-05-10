@@ -1,4 +1,4 @@
-# Worlde
+# Wordle
 
 Popular word game recreated using Preact
 
